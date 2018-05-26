@@ -1,6 +1,12 @@
 from django.db import models
 
 # Create your models here.
+class Gait(models.Model):
+    data = models.CharField(max_length=200)
+
+class Fingerprint(models.Model):
+    data = models.CharField(max_length=200)
+
 class Person(models.Model):
     name = models.CharField(max_length=200)
     LEVEL1 = '1'
@@ -16,6 +22,9 @@ class Person(models.Model):
         choices=PRIVILEGE,
         default=LEVEL1,
     )
+    gait = models.ForeignKey(Gait, on_delete=models.SET_NULL, null=True, blank=True)
+    fingerprint = models.ForeignKey(Fingerprint, on_delete=models.SET_NULL, null=True, blank=True)
+
 
 class Door(models.Model):
     name = models.CharField(max_length=200)
@@ -37,4 +46,17 @@ class Door(models.Model):
 class DoorOpen(models.Model):
     person = models.ForeignKey(Person, on_delete=models.CASCADE)
     door = models.ForeignKey(Door, on_delete=models.CASCADE)
-    datetime = models.DateTimeField('time')
+    dt = models.DateTimeField('time')
+    GAIT = '0'
+    FINGERPRINT = '1'
+    METHOD = (
+        (GAIT, '步态识别'),
+        (FINGERPRINT, '指纹识别'),
+    )
+    method = models.CharField(
+        max_length=1,
+        choices=METHOD,
+        default=GAIT,
+    )
+
+
