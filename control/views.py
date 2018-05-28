@@ -29,7 +29,17 @@ def persons(request):
 
 def person(request, person_id):
     person = get_object_or_404(Person, pk=person_id)
-    return render(request, 'control/person.html', {'person':person})
+    table = dict(
+        zip(
+            [timezone.now() - datetime.timedelta(hours=i * 4) for i in range(1, 25)]
+            ,
+            [[person.dooropen_set.filter(Q(dt__gte=timezone.now() - datetime.timedelta(hours=i * 4)) & Q(dt__lt=timezone.now() - datetime.timedelta(hours=(i - 1) * 4)) & Q(door__level=str(j))).count() for j in range(1, 4)] for i in range(1, 25)]
+        )
+    )
+    doors = person.dooropen_set.filter(dt__gte=timezone.now() - datetime.timedelta(days=3)).values('door__id', 'door__name').annotate(num=Count('door__id')).order_by('-num')
+    logs = person.dooropen_set.all().order_by('-dt')[:10]
+    methods = person.dooropen_set.filter(dt__gte=timezone.now() - datetime.timedelta(days=3)).values('method').annotate(num=Count('method'))
+    return render(request, 'control/person.html', {'person':person, 'table': table, 'doors':doors, 'logs': logs, 'methods': methods})
 
 # --------------------
 # Door
@@ -49,7 +59,8 @@ def door(request, door_id):
     )
     persons = door.dooropen_set.filter(dt__gte=timezone.now()-datetime.timedelta(days=3)).values('person__id', 'person__name').annotate(num=Count('person__id')).order_by('-num')[:5]
     logs = door.dooropen_set.all().order_by('-dt')[:10]
-    return render(request, 'control/door.html', {'door': door, 'table': table, 'persons': persons, 'logs': logs})
+    methods = door.dooropen_set.filter(dt__gte=timezone.now()-datetime.timedelta(days=3)).values('method').annotate(num=Count('method'))
+    return render(request, 'control/door.html', {'door': door, 'table': table, 'persons': persons, 'logs': logs, 'methods':methods})
 
 def door2(request, door_id, x, y):
     door = get_object_or_404(Door, pk=door_id)
@@ -62,7 +73,8 @@ def door2(request, door_id, x, y):
     )
     persons = door.dooropen_set.filter(dt__gte=timezone.now() - datetime.timedelta(days=3)).values('person__id','person__name').annotate(num=Count('person__id')).order_by('-num')[:5]
     logs = door.dooropen_set.all().order_by('-dt')[:10]
-    return render(request, 'control/door.html', {'door': door, 'table': table, 'persons': persons, 'logs': logs})
+    methods = door.dooropen_set.filter(dt__gte=timezone.now() - datetime.timedelta(days=3)).values('method').annotate(num=Count('method'))
+    return render(request, 'control/door.html', {'door': door, 'table': table, 'persons': persons, 'logs': logs, 'methods': methods})
 
 # --------------------
 # API

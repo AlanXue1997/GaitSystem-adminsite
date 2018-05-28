@@ -383,7 +383,7 @@
                 <!-- /.row -->
                 <div class="row">
                     <div class="col-lg-6">
-                        <div class="panel panel-default">
+                        <div class="panel panel-info">
                             <div class="panel-heading">
                                 门禁信息
                             </div>
@@ -391,37 +391,7 @@
                             <div class="panel-body">
                                 <p>名称：{{ door.name }}</p>
                                 <p>地址：{{ door.address }}</p>
-                                <p>安全级别： {{ door.get_level_display }}</p>
-                            </div>
-                            <!-- /.panel-body -->
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="panel panel-info">
-                            <div class="panel-heading">
-                                活动日志
-                            </div>
-                            <!-- /.panel-heading -->
-                            <div class="panel-body">
-                                {% for log in logs %}
-                                    <small>
-                                        <a class="text-danger">{{ log.person.name }}</a> 于 <a class="text-primaty">{{ log.dt|date:'Y年m月d日 H时i分s秒' }}</a> 通过 <a class="text-success">{{ log.get_method_display }}</a> 进入 <a class="text-muted">{{ log.door.name }}</a>
-                                    </small><br>
-                                {% endfor %}
-                            </div>
-                            <!-- /.panel-body -->
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-6">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                近期活跃度
-                            </div>
-                            <!-- /.panel-heading -->
-                            <div class="panel-body">
-                                <div id="door-chart"></div>
+                                <p>安全级别： {{ door.get_level_display }}
                             </div>
                             <!-- /.panel-body -->
                         </div>
@@ -444,7 +414,7 @@
                                         <tbody>
                                         {% for p in persons %}
                                             <tr>
-                                                <td><a href="#">{{ p.person__name }}</a></td>
+                                                <td><a href="{% url 'control:person' p.person__id %}">{{ p.person__name }}</a></td>
                                             <td>{{ p.num }}</td>
                                         </tr>
                                         {% endfor %}
@@ -455,7 +425,53 @@
                             </div>
                             <!-- /.panel-body -->
                         </div>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                近期活跃度
+                            </div>
+                            <!-- /.panel-heading -->
+                            <div class="panel-body">
+                                <div id="door-chart"></div>
+                            </div>
+                            <!-- /.panel-body -->
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="panel panel-default">
+
+                            <div class="panel-heading">
+                                识别方式
+                            </div>
+                            <div class="panel-body">
+                                <div id="door-chart2"></div>
+                            </div>
+                        </div>
+
                         <!-- /.panel -->
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                活动日志
+                            </div>
+                            <!-- /.panel-heading -->
+                            <div class="panel-body">
+                                {% for log in logs %}
+                                    <!--<small>-->
+                                        <a class="text-danger" href="{% url 'control:person' log.person.id %}">{{ log.person.name }}</a> 于 <a class="text-primaty">{{ log.dt|date:'Y年m月d日 H时i分s秒' }}</a> 通过 <a class="text-success">{{ log.get_method_display }}</a> 进入 <a class="text-muted" href="#">{{ log.door.name }}</a>
+                                    <!--</small>-->
+                                <br>
+                                {% endfor %}
+                            </div>
+                            <!-- /.panel-body -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -496,6 +512,17 @@
           // Labels for the ykeys -- will be displayed when you hover over the
           // chart.
           labels: ['低', '中', '高']
+        });
+    </script>
+
+    <script>
+        Morris.Donut({
+          element: 'door-chart2',
+          data: [
+            {label: "步态识别", value: {{ methods.0.num }}},
+            {label: "指纹识别", value: {{ methods.1.num }}}
+          ],
+          colors: ["#afeeee", "#b9bcf0"]
         });
     </script>
 

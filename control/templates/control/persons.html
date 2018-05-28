@@ -402,7 +402,7 @@
                                 <tbody>
                                     {% for person in persons %}
                                         <tr class="odd gradeX">
-                                            <td class="center"><a href="#">{{ person.name }}{{person.id}}</a></td>
+                                            <td class="center"><a href="{% url 'control:person' person.id %}">{{ person.name }}</a></td>
                                             <td>{{ person.get_privilege_display}}</td>
                                             <td>
                                                 {% if person.fingerprint is null %}
