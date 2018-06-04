@@ -1,10 +1,15 @@
 from django.urls import path
 
 from . import views
+from django.contrib.auth import views as auth_views
 
 app_name = 'control'
 urlpatterns = [
     path('', views.index, name='index'),
+
+    # log in / log out
+    path('login/', auth_views.LoginView.as_view(template_name='control/login.html'), name='login'),
+    path('logout/', views.logout, name='logout'),
 
     # Gait
     path('newGait/<int:person_id>/', views.newGait, name='newGait'),

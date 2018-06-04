@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
-    '172.20.14.90',
+    '172.20.26.218',
 ]
 
 
@@ -132,3 +132,5 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "adminsite/static/"),
     os.path.join(BASE_DIR,'static/')
 )
+
+LOGIN_REDIRECT_URL = '/control/doors/'
